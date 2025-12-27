@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-dotenv.config(); // ✅ MUST BE FIRST LINE
+dotenv.config(); 
 
 import express from "express";
 import cors from "cors";
