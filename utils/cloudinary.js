@@ -1,3 +1,6 @@
+import dotenv from "dotenv";
+dotenv.config(); // ✅ FORCE LOAD ENV HERE
+
 import cloudinary from "cloudinary";
 
 const cloudinaryV2 = cloudinary.v2;
@@ -14,7 +17,3 @@ export async function uploadImage(filePath) {
   });
   return result.secure_url;
 }
-console.log("Cloudinary:", {
-  name: process.env.CLOUD_NAME,
-  key: process.env.CLOUD_API_KEY,
-});

@@ -17,11 +17,6 @@ export const registerUser = async (req, res) => {
 
     let imageUrl = "";
 
-    // ✅ upload image only if provided
-
-    console.log(req.file);
-
-
     if (req.file) {
       imageUrl = await uploadImage(req.file.path);
     }
@@ -39,7 +34,6 @@ export const registerUser = async (req, res) => {
       userId: user._id,
     });
   } catch (error) {
-    console.log(error);
     res.status(500).json({ message: error.message });
   }
 };
