@@ -13,7 +13,7 @@ connectDB();
 
 app.use(
   cors({
-    origin: "*", // TEMPORARY (for debugging)
+    origin: "*", 
     credentials: true,
   })
 );app.use(express.json());

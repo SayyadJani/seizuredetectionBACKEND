@@ -11,9 +11,14 @@ cloudinaryV2.config({
   api_secret: process.env.CLOUD_API_SECRET,
 });
 
-export async function uploadImage(filePath) {
-  const result = await cloudinaryV2.uploader.upload(filePath, {
-    folder: "users",
+export function uploadImageFromBuffer(fileBuffer) {
+  return new Promise((resolve, reject) => {
+    cloudinaryV2.uploader.upload_stream(
+      { folder: "users" },
+      (error, result) => {
+        if (error) reject(error);
+        else resolve(result.secure_url);
+      }
+    ).end(fileBuffer);
   });
-  return result.secure_url;
 }

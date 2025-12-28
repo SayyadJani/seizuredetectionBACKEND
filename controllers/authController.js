@@ -1,12 +1,15 @@
 import User from "../models/user.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { uploadImage } from "../utils/cloudinary.js";
+import { uploadImageFromBuffer } from "../utils/cloudinary.js";
 
-// REGISTER
 export const registerUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
+
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
 
     const userExists = await User.findOne({ email });
     if (userExists) {
@@ -18,7 +21,7 @@ export const registerUser = async (req, res) => {
     let imageUrl = "";
 
     if (req.file) {
-      imageUrl = await uploadImage(req.file.path);
+      imageUrl = await uploadImageFromBuffer(req.file.buffer);
     }
 
     const user = await User.create({
@@ -34,7 +37,8 @@ export const registerUser = async (req, res) => {
       userId: user._id,
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("REGISTER ERROR:", error);
+    res.status(500).json({ message: "Registration failed" });
   }
 };
 
