@@ -13,10 +13,18 @@ connectDB();
 
 app.use(
   cors({
+<<<<<<< HEAD
     origin: "*", 
     credentials: true,
   })
 );app.use(express.json());
+=======
+    origin: "*", // TEMPORARY (for debugging)
+    credentials: true,
+  })
+);
+app.use(express.json());
+>>>>>>> aca2bbdf9fb025b70ce0e3e9e0c50fec4f404b56
 app.use(express.urlencoded({ extended: true }));
 
 
