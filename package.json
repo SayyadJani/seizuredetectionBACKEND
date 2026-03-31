@@ -4,6 +4,9 @@
   "description": "",
   "main": "server.js",
   "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "ml-train": "venv\\Scripts\\python ml/train.py \"Epileptic Seizure Recognition.csv\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
