@@ -16,9 +16,19 @@ export const predictSeizure = async (req, res) => {
     const filePath = req.file.path;
     const pythonScript = path.join(__dirname, "..", "ml", "predict.py");
 
-    // Path to virtual environment python
-    const venvPython = path.join(__dirname, "..", "venv", "Scripts", "python.exe");
-    const pythonExec = fs.existsSync(venvPython) ? venvPython : "python";
+    // Path to virtual environment python (Windows)
+    const venvPythonWin = path.join(__dirname, "..", "venv", "Scripts", "python.exe");
+    // Path to virtual environment python (Linux/Docker)
+    const venvPythonLin = path.join(__dirname, "..", "venv", "bin", "python");
+    
+    let pythonExec = "python3"; // Default for Cloud (Render/Ubuntu)
+    if (fs.existsSync(venvPythonWin)) {
+      pythonExec = venvPythonWin;
+    } else if (fs.existsSync(venvPythonLin)) {
+       pythonExec = venvPythonLin;
+    } else if (os.platform() === "win32") {
+       pythonExec = "python";
+    }
 
     // Command to run python script
     const pythonProcess = spawn(pythonExec, [pythonScript, filePath]);
