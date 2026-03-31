@@ -30,13 +30,15 @@ export const predictSeizure = async (req, res) => {
     });
 
     pythonProcess.stderr.on("data", (data) => {
-      console.error(`Python stderr: ${data}`);
+      const errorMsg = data.toString();
+      console.error(`Python stderr: ${errorMsg}`);
+      dataString += `[ERROR_LOG]: ${errorMsg}`; // Append error to catch it in closed
     });
 
     pythonProcess.on("close", (code) => {
       // 1. Cleanup uploaded file
       try {
-        fs.unlinkSync(filePath);
+        if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
       } catch (err) {
         console.error("Cleanup error:", err);
       }
@@ -44,17 +46,27 @@ export const predictSeizure = async (req, res) => {
       if (code !== 0) {
         return res
           .status(500)
-          .json({ error: "Python execution failed. Check console for details." });
+          .json({ 
+            error: "Clinical Insight Failure", 
+            details: dataString.includes("ModuleNotFoundError") 
+              ? "Python ML dependencies (TensorFlow/Numpy) not correctly initialized on server." 
+              : "Backend execution failed. Ensure Python environment is configured.",
+            raw: dataString
+          });
       }
 
       try {
-        const result = JSON.parse(dataString);
+        // Find JSON part only, in case there were logs
+        const jsonStart = dataString.indexOf('{');
+        if (jsonStart === -1) throw new Error("No JSON in output");
+        
+        const result = JSON.parse(dataString.substring(jsonStart));
         if (result.error) {
-          return res.status(500).json({ error: result.error });
+          return res.status(500).json({ error: result.error, details: "ML Engine internal error." });
         }
         res.json(result);
       } catch (err) {
-        res.status(500).json({ error: "Failed to parse Python output" });
+        res.status(500).json({ error: "Failed to parse clinical diagnostics", details: "Memory limit or environment mismatch.", raw: dataString });
       }
     });
   } catch (error) {
